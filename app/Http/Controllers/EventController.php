@@ -40,6 +40,6 @@ class EventController extends Controller
 
     public function getEventsByUserId(FilterEventRequest $request): JsonResponse
     {
-        return response()->json($this->eventService->getEventsByUserIdWithTemperature($request->validated()));
+        return response()->json($this->eventService->getEventsByUserId($request->validated()));
     }
 }

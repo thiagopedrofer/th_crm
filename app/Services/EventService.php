@@ -46,35 +46,23 @@ class EventService
     {
         $userId = Auth::user()->id;
 
-        return $this->eventRepository->getEventsByUserId($userId, $filters);
-    }
-
-    private function getProgress(Carbon $nextCallDate): string
-    {
-        if ($nextCallDate->lt(Carbon::now())) {
-            return 'overdue';
-        } elseif ($nextCallDate->lte(Carbon::now()->addDays(2))) {
-            return 'due_soon';
-        } else {
-            return 'on_time';
-        }
-    }
-
-    public function getEventsByUserIdWithTemperature(array $filters = []): LengthAwarePaginator
-    {
-
-        $events = $this->eventRepository->getEventsByUserId(Auth::user()->id, $filters);
+        $events = $this->eventRepository->getEventsByUserId($userId, $filters);
 
         $events->getCollection()->transform(function ($event) {
             $nextCallDate = Carbon::parse($event->next_call_date);
 
-            $event->progress = $this->getProgress($nextCallDate);
+            if ($nextCallDate->lt(Carbon::now())) {
+                $event->progress = 'overdue';
+            } elseif ($nextCallDate->lte(Carbon::now()->addDays(2))) {
+                $event->progress = 'due_soon';
+            } else {
+                $event->progress = 'on_time';
+            }
 
             return $event;
         });
 
         return $events;
     }
-
 
 }
