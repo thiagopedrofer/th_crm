@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Lead extends Model
 {
@@ -10,14 +11,11 @@ class Lead extends Model
         'name',
         'email',
         'phone',
-        'address',
         'city',
         'state',
-        'zip',
+        'lead_type_id',
         'user_id',
-        'next_call_date',
         'status',
-        'notes',
     ];
 
     public function user()
@@ -25,8 +23,8 @@ class Lead extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function events()
+    public function events(): BelongsToMany
     {
-        return $this->hasMany(Event::class);
+        return $this->belongsToMany(Event::class, 'lead_event', 'lead_id', 'event_id');
     }
 }

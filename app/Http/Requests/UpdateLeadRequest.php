@@ -30,7 +30,6 @@ class UpdateLeadRequest extends FormRequest
             'state' => 'nullable|string|max:255',
             'zip' => 'nullable|string|max:255',
             'user_id' => 'nullable|exists:users,id',
-            'next_call_date' => 'nullable|date',
             'status' => 'nullable|in:in_progress,successful,unsuccessful',
             'notes' => 'nullable|string|max:255',
         ];

@@ -4,10 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\EventController;
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/{id}/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'leads', 'middleware' => 'auth:sanctum'], function () {
     Route::post('/', [LeadController::class, 'create']);
@@ -16,10 +18,20 @@ Route::group(['prefix' => 'leads', 'middleware' => 'auth:sanctum'], function () 
     Route::get('/', [LeadController::class, 'index']);
     Route::get('/{id}', [LeadController::class, 'show']);
 });
+
 Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/me', [UserController::class, 'me']);
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'show']);
     Route::put('/{id}', [UserController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'destroy']);
+});
+
+Route::group(['prefix' => 'events', 'middleware' => 'auth:sanctum'], function () {
+    Route::post('/', [EventController::class, 'create']);
+    Route::get('/', [EventController::class, 'getAll']);
+    Route::get('/user', [EventController::class, 'getEventsByUserId']);
+    Route::get('/{id}', [EventController::class, 'find']);
+    Route::put('/{id}', [EventController::class, 'update']);
+    Route::delete('/{id}', [EventController::class, 'delete']);
 });

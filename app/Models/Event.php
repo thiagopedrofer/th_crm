@@ -3,25 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Event extends Model
 {
     protected $fillable = [
-        'name',
-        'description',
-        'user_id',
-        'lead_id',
-        'progress',
+        'next_call_date',
         'notes',
     ];
 
-    public function user()
+    public function leads(): BelongsToMany
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function lead()
-    {
-        return $this->belongsTo(Lead::class);
+        return $this->belongsToMany(Lead::class, 'lead_event', 'event_id', 'lead_id')->withTimestamps();
     }
 }

@@ -5,36 +5,37 @@ namespace App\Http\Controllers;
 use App\Services\LeadService;
 use App\Http\Requests\CreateLeadRequest;
 use App\Http\Requests\UpdateLeadRequest;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+
 class LeadController extends Controller
 {
     public function __construct(private LeadService $leadService)
     {
     }
 
-    public function create(CreateLeadRequest $request)
+    public function create(CreateLeadRequest $request): JsonResponse
     {
-        return $this->leadService->create($request->validated());
+        return response()->json($this->leadService->create($request->validated()));
     }
 
-    public function update(UpdateLeadRequest $request, int $id)
+    public function update(UpdateLeadRequest $request, int $id): JsonResponse
     {
-        return $this->leadService->update($id, $request->validated());
+        return response()->json($this->leadService->update($id, $request->validated()));
     }
     
-    public function delete(int $id)
+    public function delete(int $id): JsonResponse
     {
-        return $this->leadService->delete($id);
+        return response()->json($this->leadService->delete($id));
     }
     
-    public function getAll(array $filters = [])
+    public function getAll(array $filters = []): JsonResponse
     {
-        return $this->leadService->getAll($filters);
+        return response()->json($this->leadService->getAll($filters));
     }
     
-    public function find(int $id)
+    public function find(int $id): JsonResponse
     {
-        return $this->leadService->find($id);
+        return response()->json($this->leadService->find($id));
     }
     
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateLeadRequest extends FormRequest
+class FilterEventRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,14 +22,13 @@ class CreateLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:leads,email',
-            'phone' => 'required|string|unique:leads,phone',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'next_call_date' => 'required|date|after_or_equal:now',
-            'notes' => 'required|string|max:255',
-            'lead_type_id' => 'required|exists:lead_types,id',
+            'notes' => 'nullable|string',
+            'per_page' => 'nullable|integer|min:1|max:10',
+            'page' => 'nullable|integer|min:1',
+            'progress' => 'nullable|string|in:overdue,due_soon,on_time',
+            'next_call_date' => 'nullable|date',
+            'next_call_date_from' => 'nullable|date',
+            'next_call_date_to' => 'nullable|date',
         ];
     }
 }
