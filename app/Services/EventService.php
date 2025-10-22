@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Repositories\EventRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
+use App\Models\Event;
 
 class EventService
 {
@@ -13,12 +14,21 @@ class EventService
     {
     }
 
-    public function getAll(array $filters = [])
+    public function getAll(array $filters = []): LengthAwarePaginator
     {
-        return $this->eventRepository->getAll($filters);
+        $events = $this->eventRepository->getAll($filters);
+
+        $events->getCollection()->transform(function ($event) {
+            $nextCallDate = Carbon::parse($event->next_call_date);
+            $event->progress = $this->getProgress($nextCallDate);
+        
+            return $event;
+        });
+
+        return $events;
     }
 
-    public function find(int $id)
+    public function find(int $id): Event
     {
         return $this->eventRepository->find($id);
     }
@@ -27,22 +37,39 @@ class EventService
     {
         $event = $this->eventRepository->create($data);
 
-        $event->leads()->attach($data['lead_id']);
-
         return $event;
     }
 
-    public function update(int $id, array $data)
+    public function update(int $id, array $data): Event
     {
         return $this->eventRepository->update($id, $data);
     }
 
-    public function delete(int $id)
+    public function delete(int $id): void
     {
-        return $this->eventRepository->delete($id);
+        $this->eventRepository->delete($id);
+    }
+
+    private function getProgress(Carbon $nextCallDate): string
+    {
+        $now = Carbon::now();
+
+        if ($nextCallDate->lt($now)) {
+            return 'overdue';
+        }
+
+        if ($nextCallDate->isSameDay($now) && $nextCallDate->gte($now)) {
+            return 'today';
+        }
+
+        if ($nextCallDate->lte($now->copy()->addDays(2))) {
+            return 'due_soon';
+        }
+
+        return 'on_time';
     }
     
-    public function getEventsByUserId(array $filters = [])
+    public function getEventsByUserId(array $filters = []): LengthAwarePaginator
     {
         $userId = Auth::user()->id;
 
@@ -50,15 +77,8 @@ class EventService
 
         $events->getCollection()->transform(function ($event) {
             $nextCallDate = Carbon::parse($event->next_call_date);
-
-            if ($nextCallDate->lt(Carbon::now())) {
-                $event->progress = 'overdue';
-            } elseif ($nextCallDate->lte(Carbon::now()->addDays(2))) {
-                $event->progress = 'due_soon';
-            } else {
-                $event->progress = 'on_time';
-            }
-
+            $event->progress = $this->getProgress($nextCallDate);
+        
             return $event;
         });
 

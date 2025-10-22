@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Lead;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LeadRepository
 {
@@ -14,7 +16,7 @@ class LeadRepository
 
     public function find(int $id): Lead
     {
-        return Lead::find($id);
+        return Lead::with('events')->findOrFail($id);
     }
 
     public function update(int $id, array $data): Lead
@@ -29,12 +31,33 @@ class LeadRepository
         Lead::destroy($id);
     }
 
-    public function getAll(array $filters = []): Collection
+    private function filterLeads(Builder $query, array $filters): Builder
     {
-        return Lead::whereAny(
-            ['name', 'email', 'phone', 'address', 'city', 'state', 'zip'],
-            'like',
-            '%' . $filters['search'] . '%'
-        )->paginate($filters['per_page'] ?? 10);
+        return $query->when(isset($filters['name']), function ($query) use ($filters) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        })
+        ->when(isset($filters['city']), function ($query) use ($filters) {
+            $query->where('city', 'like', '%' . $filters['city'] . '%');
+        })
+        ->when(isset($filters['state']), function ($query) use ($filters) {
+            $query->where('state', 'like', '%' . $filters['state'] . '%');
+        })
+        ->when(isset($filters['status']), function ($query) use ($filters) {
+            $query->where('status', 'like', '%' . $filters['status'] . '%');
+        })
+        ->when(isset($filters['lead_type_id']), function ($query) use ($filters) {
+            $query->where('lead_type_id', $filters['lead_type_id']);
+        });
+    }
+
+    public function getAll(array $filters = []): LengthAwarePaginator
+    {
+        return $this->filterLeads(Lead::query()->orderBy('name')->with('events'), $filters)->paginate($filters['per_page'] ?? 15);
+    }
+
+    public function getLeadsByUserId(int $userId, array $filters = []): LengthAwarePaginator
+    {
+        return $this->filterLeads(Lead::query()->where('user_id', $userId)->orderBy('name')->with('events'), $filters)
+        ->paginate($filters['per_page'] ?? 15);
     }
 }

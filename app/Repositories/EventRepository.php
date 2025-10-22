@@ -16,7 +16,7 @@ class EventRepository
 
     public function find(int $id): ?Event
     {
-        return Event::find($id);
+        return Event::with('lead')->find($id);
     }
 
     public function update(int $id, array $data): ?Event
@@ -32,8 +32,10 @@ class EventRepository
     private function filterEvents(Builder $query, array $filters = []): Builder
     {
         return $query
-            ->when(isset($filters['notes']), function ($query) use ($filters) {
-                $query->where('notes', 'like', '%' . $filters['notes'] . '%');
+            ->when(isset($filters['lead_name']), function ($query) use ($filters) {
+                $query->whereHas('leads', function ($query) use ($filters) {
+                    $query->where('name', 'like', '%' . $filters['lead_name'] . '%');
+                });
             })
             ->when(isset($filters['progress']), function ($query) use ($filters) {
                 $query->when($filters['progress'] == 'overdue', function ($query) {
@@ -41,6 +43,10 @@ class EventRepository
                 })
                 ->when($filters['progress'] == 'due_soon', function ($query) {
                     $query->where('next_call_date', '<=', Carbon::now()->addDays(2));
+                })
+                ->when($filters['progress'] === 'today', function ($query) {
+                    $query->whereDate('next_call_date', Carbon::now()->toDateString())
+                          ->whereTime('next_call_date', '>=', Carbon::now()->toTimeString());
                 })
                 ->when($filters['progress'] == 'on_time', function ($query) {
                     $query->where('next_call_date', '>=', Carbon::now()->addDays(2));
@@ -68,13 +74,15 @@ class EventRepository
 
     public function getAll(array $filters = []): LengthAwarePaginator
     {
-        return $this->filterEvents(Event::query(), $filters)->paginate($filters['per_page'] ?? 10);
+        return $this->filterEvents(Event::query(), $filters)->with('lead')->paginate($filters['per_page'] ?? 10);
     }
 
     public function getEventsByUserId(int $userId, array $filters = []): LengthAwarePaginator
     {
-        return $this->filterEvents(Event::query(), $filters)->with('leads')->whereHas('leads', function ($query) use ($userId) {
-            $query->where('leads.user_id', $userId);
+        return $this->filterEvents(Event::query(), $filters)->with('lead')->whereHas('lead', function ($query) use ($userId) {
+            $query->whereHas('user', function ($query) use ($userId) {
+                $query->where('id', $userId);
+            });
         })
         ->paginate($filters['per_page'] ?? 10);
     }

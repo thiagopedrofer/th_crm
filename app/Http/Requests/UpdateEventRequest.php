@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FilterEventRequest extends FormRequest
+class UpdateEventRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +22,9 @@ class FilterEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'lead_name' => 'nullable|string',
-            'per_page' => 'nullable|integer|min:1|max:10',
-            'page' => 'nullable|integer|min:1',
-            'progress' => 'nullable|string|in:overdue,due_soon,on_time,today',
             'next_call_date' => 'nullable|date',
-            'next_call_date_from' => 'nullable|date',
-            'next_call_date_to' => 'nullable|date',
+            'notes' => 'nullable|string|max:255',
+            'lead_id' => 'nullable|exists:leads,id',
         ];
     }
 }

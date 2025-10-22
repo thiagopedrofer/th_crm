@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LeadType extends Model
 {
@@ -13,7 +14,7 @@ class LeadType extends Model
         'name',
     ];
 
-    public function leads()
+    public function leads(): HasMany
     {
         return $this->hasMany(Lead::class);
     }

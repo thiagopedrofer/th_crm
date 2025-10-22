@@ -18,7 +18,7 @@ class UserController extends Controller
         return response()->json($this->userService->register($request->validated()));
     }
 
-    public function find(int $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
         return response()->json($this->userService->find($id));
     }

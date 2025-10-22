@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Lead extends Model
 {
@@ -18,13 +20,23 @@ class Lead extends Model
         'status',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function events(): BelongsToMany
+    public function events(): HasMany
     {
-        return $this->belongsToMany(Event::class, 'lead_event', 'lead_id', 'event_id');
+        return $this->hasMany(Event::class);
+    }
+
+    public function leadType(): BelongsTo
+    {
+        return $this->belongsTo(LeadType::class);
+    }
+
+    public function client(): HasOne
+    {
+        return $this->hasOne(Client::class);
     }
 }

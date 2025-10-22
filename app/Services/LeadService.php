@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Repositories\LeadRepository;
 use App\Repositories\EventRepository;
 use App\Models\Lead;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -25,12 +25,11 @@ class LeadService
 
         $lead = $this->leadRepository->create($data);
 
-        $event = $this->eventRepository->create([
+        $this->eventRepository->create([
             'next_call_date' => Carbon::parse($data['next_call_date'])->format('Y-m-d H:i:s'),
             'notes' => $data['notes'],
+            'lead_id' => $lead->id,
         ]);
-
-        $lead->events()->attach($event->id);
 
         return $lead;
     }
@@ -45,9 +44,14 @@ class LeadService
         $this->leadRepository->delete($id);
     }
     
-    public function getAll(array $filters = []): Collection
+    public function getAll(array $filters = []): LengthAwarePaginator
     {
         return $this->leadRepository->getAll($filters);
+    }
+    
+    public function getLeadsByUserId(int $userId, array $filters = []): LengthAwarePaginator
+    {
+        return $this->leadRepository->getLeadsByUserId($userId, $filters);
     }
     
     public function find(int $id): Lead

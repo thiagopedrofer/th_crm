@@ -6,6 +6,8 @@ use App\Repositories\UserRepository;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Exceptions\ModelNotFoundException;
+use App\Exceptions\UnauthorizedException;
 
 class AuthService
 {
@@ -24,12 +26,13 @@ class AuthService
     {
         $user = $this->userRepository->findByEmail($data['email']);
 
+
         if (!$user) {
-            throw new \Exception('User not found');
+            throw new ModelNotFoundException('User not found!');
         }
 
         if (!Hash::check($data['password'], $user->password)) {
-            throw new \Exception('Invalid password');
+            throw new UnauthorizedException('Data credentials are incorrect!');
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateLeadRequest extends FormRequest
+class CreateClientRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,13 +23,17 @@ class CreateLeadRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:leads,email',
-            'phone' => 'required|string|unique:leads,phone',
+            'email' => 'nullable|email|unique:clients,email',
+            'phone' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'state' => 'nullable|string|max:255',
-            'next_call_date' => 'required|date|after_or_equal:now',
-            'notes' => 'required|string|max:255',
-            'lead_type_id' => 'required|exists:lead_types,id',
+            'zip' => 'nullable|string|max:255',
+            'payment_method' => 'required|string|in:cash,pix,credit_card,debit_card,bank_slip,crypto_currency',
+            'due_day' => 'required|integer|min:1|max:31',
+            'assembly_day' => 'required|integer|min:1|max:31',
+            'credit_amount' => 'required|numeric',
+            'lead_id' => 'nullable|exists:leads,id',
         ];
     }
 }

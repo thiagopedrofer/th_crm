@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\EventService;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\FilterEventRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateEventRequest;
 use Illuminate\Http\JsonResponse;
 
 class EventController extends Controller
@@ -28,7 +28,7 @@ class EventController extends Controller
         return response()->json($this->eventService->find($id));
     }
 
-    public function update(int $id, Request $request): JsonResponse
+    public function update(int $id, UpdateEventRequest $request): JsonResponse
     {
         return response()->json($this->eventService->update($id, $request->all()));
     }

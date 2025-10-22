@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('notes')->nullable();
             $table->dateTime('next_call_date')->nullable();
+            $table->unsignedBigInteger('lead_id');
+            $table->foreign('lead_id')->references('id')->on('leads');
             $table->timestamps();
         });
     }

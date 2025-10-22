@@ -20,10 +20,16 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('zip')->nullable();
-            $table->enum('payment_status', ['paid', 'overdue']);
-            $table->enum('situation', ['active', 'inactive']);
+            $table->enum('payment_status', ['confirmed', 'pending', 'awaiting_payment'])->default('awaiting_payment')->nullable();
+            $table->enum('payment_method', ['cash', 'pix', 'credit_card', 'debit_card', 'bank_slip', 'crypto_currency'])->nullable();
+            $table->integer('due_day')->nullable();
+            $table->integer('assembly_day')->nullable();
+            $table->decimal('credit_amount', 15, 2)->nullable();
+            $table->enum('situation', ['active', 'inactive'])->default('active');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('lead_id')->nullable();
+            $table->foreign('lead_id')->references('id')->on('leads');
             $table->timestamps();
         });
     }
