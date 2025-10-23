@@ -21,7 +21,9 @@ class EventRepository
 
     public function update(int $id, array $data): ?Event
     {
-        return Event::find($id)->update($data);
+        $event = $this->find($id);
+        $event->update($data);
+        return $event;
     }
 
     public function delete(int $id): void
@@ -33,7 +35,7 @@ class EventRepository
     {
         return $query
             ->when(isset($filters['lead_name']), function ($query) use ($filters) {
-                $query->whereHas('leads', function ($query) use ($filters) {
+                $query->whereHas('lead', function ($query) use ($filters) {
                     $query->where('name', 'like', '%' . $filters['lead_name'] . '%');
                 });
             })
@@ -69,6 +71,14 @@ class EventRepository
 
                 $query->whereBetween('next_call_date', [$from, $to]);
             })
+            ->when(isset($filters['user_id']), function ($query) use ($filters) {
+                $query->whereHas('lead', function ($query) use ($filters) {
+                    $query->where('user_id', $filters['user_id']);
+                });
+            })
+            ->when(isset($filters['lead_id']), function ($query) use ($filters) {
+                $query->where('lead_id', $filters['lead_id']);
+            })
             ->orderBy('next_call_date');
     }
 
@@ -79,7 +89,7 @@ class EventRepository
 
     public function getEventsByUserId(int $userId, array $filters = []): LengthAwarePaginator
     {
-        return $this->filterEvents(Event::query(), $filters)->with('lead')->whereHas('lead', function ($query) use ($userId) {
+        return $this->filterEvents(Event::query(), $filters)->with(['lead', 'lead.client'])->whereHas('lead', function ($query) use ($userId) {
             $query->whereHas('user', function ($query) use ($userId) {
                 $query->where('id', $userId);
             });

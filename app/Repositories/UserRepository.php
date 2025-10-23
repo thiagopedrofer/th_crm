@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserRepository
 {
@@ -34,12 +34,16 @@ class UserRepository
         User::destroy($id);
     }
 
-    public function getAll(array $filters = []): Collection
+    public function getAll(array $filters = []): LengthAwarePaginator
     {
-        return User::whereAny(
-            ['name', 'email', 'phone', 'address', 'city', 'state', 'zip'],
-            'like',
-            '%' . $filters['search'] . '%'
-        )->paginate($filters['per_page'] ?? 10);
+        return User::when(isset($filters['privilege_id']), function ($query) use ($filters) {
+            $query->where('privilege_id', $filters['privilege_id']);
+        })->when(isset($filters['search']), function ($query) use ($filters) {
+            $query->where('name', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('email', 'like', '%' . $filters['search'] . '%');
+        })->when(isset($filters['status']), function ($query) use ($filters) {
+            $query->where('status', $filters['status']);
+        })
+        ->paginate($filters['per_page'] ?? 10);
     }
 }

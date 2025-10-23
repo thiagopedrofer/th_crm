@@ -30,6 +30,7 @@ class CreateLeadRequest extends FormRequest
             'next_call_date' => 'required|date|after_or_equal:now',
             'notes' => 'required|string|max:255',
             'lead_type_id' => 'required|exists:lead_types,id',
+            'desired_credit_amount' => 'nullable|numeric|min:0',
         ];
     }
 }

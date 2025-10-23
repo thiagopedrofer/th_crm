@@ -47,6 +47,12 @@ class LeadRepository
         })
         ->when(isset($filters['lead_type_id']), function ($query) use ($filters) {
             $query->where('lead_type_id', $filters['lead_type_id']);
+        })
+        ->when(isset($filters['desired_credit_amount']), function ($query) use ($filters) {
+            $query->where('desired_credit_amount', $filters['desired_credit_amount']);
+        })
+        ->when(isset($filters['user_id']), function ($query) use ($filters) {
+            $query->where('user_id', $filters['user_id']);
         });
     }
 

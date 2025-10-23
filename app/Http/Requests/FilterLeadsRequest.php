@@ -27,6 +27,8 @@ class FilterLeadsRequest extends FormRequest
             'state' => 'nullable|string|max:255',
             'status' => 'nullable|string|max:255',
             'lead_type_id' => 'nullable|integer|exists:lead_types,id',
+            'user_id' => 'nullable|exists:users,id',
+            'desired_credit_amount' => 'nullable|numeric|min:0',
             'per_page' => 'nullable|integer|min:1|max:100',
             'page' => 'nullable|integer|min:1',
         ];

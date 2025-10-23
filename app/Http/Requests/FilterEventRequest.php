@@ -29,6 +29,8 @@ class FilterEventRequest extends FormRequest
             'next_call_date' => 'nullable|date',
             'next_call_date_from' => 'nullable|date',
             'next_call_date_to' => 'nullable|date',
+            'user_id' => 'nullable|exists:users,id',
+            'lead_id' => 'nullable|exists:leads,id',
         ];
     }
 }

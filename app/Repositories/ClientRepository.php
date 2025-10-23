@@ -35,8 +35,8 @@ class ClientRepository
         ->when(isset($filters['phone']), function ($query) use ($filters) {
             $query->where('phone', 'like', '%' . $filters['phone'] . '%');
         })
-        ->when(isset($filters['cpf']), function ($query) use ($filters) {
-            $query->where('cpf', 'like', '%' . $filters['cpf'] . '%');
+        ->when(isset($filters['user_id']), function ($query) use ($filters) {
+            $query->where('user_id', $filters['user_id']);
         });
     }
     

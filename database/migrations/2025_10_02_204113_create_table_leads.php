@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->unsignedBigInteger('lead_type_id');
+            $table->decimal('desired_credit_amount', 15, 2)->nullable();
             $table->foreign('lead_type_id')->references('id')->on('lead_types');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');

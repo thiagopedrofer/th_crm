@@ -18,6 +18,7 @@ class Lead extends Model
         'lead_type_id',
         'user_id',
         'status',
+        'desired_credit_amount',
     ];
 
     public function user(): BelongsTo

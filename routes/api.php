@@ -7,6 +7,7 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ClientController;
 use App\Models\LeadType;
+use App\Models\Privilege;
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -49,4 +50,8 @@ Route::group(['prefix' => 'clients', 'middleware' => 'auth:sanctum'], function (
 
 Route::get('/lead-types', function () {
     return response()->json(LeadType::get());
+});
+
+Route::get('/privileges', function () {
+    return response()->json(Privilege::get());
 });

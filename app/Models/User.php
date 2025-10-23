@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -25,6 +27,7 @@ class User extends Authenticatable
         'privilege_id',
         'email_verified_at',
         'remember_token',
+        'status',
     ];
 
     /**
@@ -50,22 +53,22 @@ class User extends Authenticatable
         ];
     }
 
-    public function privilege()
+    public function privilege(): BelongsTo
     {
         return $this->belongsTo(Privilege::class);
     }
     
-    public function clients()
+    public function clients(): HasMany
     {
         return $this->hasMany(Client::class);
     }
     
-    public function leads()
+    public function leads(): HasMany
     {
         return $this->hasMany(Lead::class);
     }
     
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }

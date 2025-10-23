@@ -32,6 +32,7 @@ class UpdateLeadRequest extends FormRequest
             'user_id' => 'nullable|exists:users,id',
             'status' => 'nullable|in:in_progress,successful,unsuccessful',
             'notes' => 'nullable|string|max:255',
+            'desired_credit_amount' => 'nullable|numeric|min:0',
         ];
     }
 }

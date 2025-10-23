@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FilterUsersRequest;
 use App\Services\UserService;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -23,9 +24,9 @@ class UserController extends Controller
         return response()->json($this->userService->find($id));
     }
 
-    public function index(): JsonResponse
+    public function index(FilterUsersRequest $request): JsonResponse
     {
-        return response()->json($this->userService->getAll());
+        return response()->json($this->userService->getAll($request->validated()));
     }
 
     public function update(int $id, UpdateUserRequest $request): JsonResponse
