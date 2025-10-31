@@ -58,4 +58,63 @@ class LeadService
     {
         return $this->leadRepository->find($id);
     }
+
+    public function getLeadsWithEvents(array $filters = []): LengthAwarePaginator
+    {
+        $leads = $this->leadRepository->getLeadsWithEvents($filters);
+
+        $leads->getCollection()->transform(function ($lead) {
+            if ($lead->events) {
+                $lead->events->transform(function ($event) {
+                    $nextCallDate = Carbon::parse($event->next_call_date);
+                    $event->progress = $this->getEventProgress($nextCallDate);
+                    return $event;
+                });
+            }
+            return $lead;
+        });
+
+        return $leads;
+    }
+
+    public function getLeadsWithEventsByUserId(array $filters = []): LengthAwarePaginator
+    {
+        $userId = Auth::user()->id;
+
+        // Buscar leads do usuário com eventos usando o método específico
+        $leads = $this->leadRepository->getLeadsWithEventsByUserId($userId, $filters);
+
+        // Transformar cada lead para incluir progress nos eventos
+        $leads->getCollection()->transform(function ($lead) {
+            if ($lead->events) {
+                $lead->events->transform(function ($event) {
+                    $nextCallDate = Carbon::parse($event->next_call_date);
+                    $event->progress = $this->getEventProgress($nextCallDate);
+                    return $event;
+                });
+            }
+            return $lead;
+        });
+
+        return $leads;
+    }
+
+    private function getEventProgress(Carbon $nextCallDate): string
+    {
+        $now = Carbon::now();
+
+        if ($nextCallDate->lt($now)) {
+            return 'overdue';
+        }
+
+        if ($nextCallDate->isSameDay($now) && $nextCallDate->gte($now)) {
+            return 'today';
+        }
+
+        if ($nextCallDate->lte($now->copy()->addDays(2))) {
+            return 'due_soon';
+        }
+
+        return 'on_time';
+    }
 }

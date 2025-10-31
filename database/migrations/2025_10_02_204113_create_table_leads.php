@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
+            $table->string('address')->nullable();
+            $table->string('address_complement')->nullable();
+            $table->string('zip')->nullable();
             $table->unsignedBigInteger('lead_type_id');
             $table->decimal('desired_credit_amount', 15, 2)->nullable();
             $table->foreign('lead_type_id')->references('id')->on('lead_types');

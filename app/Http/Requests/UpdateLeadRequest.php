@@ -23,9 +23,10 @@ class UpdateLeadRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|unique:leads,email',
-            'phone' => 'nullable|string|unique:leads,phone',
+            'email' => 'nullable|email|unique:leads,email,' . $this->route('id'),
+            'phone' => 'nullable|string|unique:leads,phone,' . $this->route('id'),
             'address' => 'nullable|string|max:255',
+            'address_complement' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'state' => 'nullable|string|max:255',
             'zip' => 'nullable|string|max:255',

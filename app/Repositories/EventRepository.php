@@ -89,7 +89,7 @@ class EventRepository
 
     public function getEventsByUserId(int $userId, array $filters = []): LengthAwarePaginator
     {
-        return $this->filterEvents(Event::query(), $filters)->with(['lead', 'lead.client'])->whereHas('lead', function ($query) use ($userId) {
+        return $this->filterEvents(Event::query(), $filters)->with(['lead'])->whereHas('lead', function ($query) use ($userId) {
             $query->whereHas('user', function ($query) use ($userId) {
                 $query->where('id', $userId);
             });

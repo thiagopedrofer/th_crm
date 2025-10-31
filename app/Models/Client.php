@@ -15,6 +15,7 @@ class Client extends Model
         'city',
         'state',
         'zip',
+        'address_complement',
         'user_id',
         'payment_status',
         'situation',

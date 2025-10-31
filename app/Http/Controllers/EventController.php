@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\EventService;
+use App\Services\LeadService;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\FilterEventRequest;
 use App\Http\Requests\UpdateEventRequest;
@@ -10,7 +11,10 @@ use Illuminate\Http\JsonResponse;
 
 class EventController extends Controller
 {
-    public function __construct(private EventService $eventService)
+    public function __construct(
+        private EventService $eventService,
+        private LeadService $leadService
+    )
     {}
 
     public function create(CreateEventRequest $request): JsonResponse
@@ -20,7 +24,7 @@ class EventController extends Controller
 
     public function getAll(FilterEventRequest $request): JsonResponse
     {   
-        return response()->json($this->eventService->getAll($request->validated()));
+        return response()->json($this->leadService->getLeadsWithEvents($request->validated()));
     }
 
     public function find(int $id): JsonResponse
@@ -40,6 +44,6 @@ class EventController extends Controller
 
     public function getEventsByUserId(FilterEventRequest $request): JsonResponse
     {
-        return response()->json($this->eventService->getEventsByUserId($request->validated()));
+        return response()->json($this->leadService->getLeadsWithEventsByUserId($request->validated()));
     }
 }

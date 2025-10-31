@@ -26,6 +26,7 @@ class CreateClientRequest extends FormRequest
             'email' => 'nullable|email|unique:clients,email',
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
+            'address_complement' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'state' => 'nullable|string|max:255',
             'zip' => 'nullable|string|max:255',

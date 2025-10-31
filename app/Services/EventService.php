@@ -69,20 +69,5 @@ class EventService
         return 'on_time';
     }
     
-    public function getEventsByUserId(array $filters = []): LengthAwarePaginator
-    {
-        $userId = Auth::user()->id;
-
-        $events = $this->eventRepository->getEventsByUserId($userId, $filters);
-
-        $events->getCollection()->transform(function ($event) {
-            $nextCallDate = Carbon::parse($event->next_call_date);
-            $event->progress = $this->getProgress($nextCallDate);
-        
-            return $event;
-        });
-
-        return $events;
-    }
 
 }
